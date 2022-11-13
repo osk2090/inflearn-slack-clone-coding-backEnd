@@ -9,6 +9,14 @@ import { ChannelsModule } from './channels/channels.module';
 import { DmsModule } from './dms/dms.module';
 import { UsersService } from './users/users.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ChannelMembers } from './entities/ChannelMembers';
+import { ChannelChats } from './entities/ChannelChats';
+import { Channels } from './entities/Channels';
+import { DMs } from './entities/DMs';
+import { Mentions } from './entities/Mentions';
+import { Users } from './entities/Users';
+import { WorkspaceMembers } from './entities/WorkspaceMembers';
+import { Workspaces } from './entities/Workspaces';
 
 @Module({
   imports: [
@@ -21,9 +29,23 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       type: 'mariadb',
       host: 'localhost',
       port: 3306,
-      username: process.env.DB_USER,
+      username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
+      entities: [
+        ChannelChats,
+        ChannelMembers,
+        Channels,
+        DMs,
+        Mentions,
+        Users,
+        WorkspaceMembers,
+        Workspaces,
+      ],
+      synchronize: false,
+      logging: true,
+      keepConnectionAlive: true,
+      charset: 'utf8mb4_general_ci',
     }),
   ],
   controllers: [AppController],
