@@ -6,7 +6,7 @@ export class AppService {
   constructor(private readonly configService: ConfigService) {}
 
   getHello(): string {
-    return 'Hello World!';
+    return process.env.SECRET;
   }
 
   getTest() {
