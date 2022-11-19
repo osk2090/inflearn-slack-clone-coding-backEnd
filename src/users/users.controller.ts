@@ -16,7 +16,7 @@ import { UndifinedToNullInterceptor } from '../common/interceptors/undifinedToNu
 
 @UseInterceptors(UndifinedToNullInterceptor)
 @ApiTags('USERS')
-@Controller('users')
+@Controller('/api/users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
@@ -30,8 +30,9 @@ export class UsersController {
 
   @ApiOperation({ summary: '회원가입' })
   @Post()
-  postUsers(@Body() body: JoinRequestDto) {
-    this.usersService.postUsers(body);
+  async join(@Body() body: JoinRequestDto) {
+    this.usersService.join(body.email, body.nickname, body.password);
+    return undefined;
   }
 
   @ApiOperation({ summary: '로그인' })

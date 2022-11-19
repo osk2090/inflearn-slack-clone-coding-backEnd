@@ -47,6 +47,7 @@ import { Workspaces } from './entities/Workspaces';
       keepConnectionAlive: true,
       charset: 'utf8mb4_general_ci',
     }),
+    TypeOrmModule.forFeature([Users]),
   ],
   controllers: [AppController],
   providers: [AppService, ConfigService, UsersService],
