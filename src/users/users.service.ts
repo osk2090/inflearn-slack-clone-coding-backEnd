@@ -1,6 +1,5 @@
 import {
   BadRequestException,
-  HttpException,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -16,6 +15,7 @@ export class UsersService {
   ) {}
 
   getUser() {}
+
   async join(email: string, nickname: string, password: string) {
     if (!email) {
       throw new BadRequestException('이메일이 없습니다.');

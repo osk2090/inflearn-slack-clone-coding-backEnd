@@ -6,6 +6,7 @@ import {
   Post,
   Req,
   Res,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { JoinRequestDto } from './dto/join.request.dto';
@@ -14,6 +15,7 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UserDto } from '../common/dto/user.dto';
 import { User } from '../common/decorator/user.decorator';
 import { UndifinedToNullInterceptor } from '../common/interceptors/undifinedToNull.interceptor';
+import { LocalAuthGuards } from '../auth/local.auth.guards';
 
 @UseInterceptors(UndifinedToNullInterceptor)
 @ApiTags('USERS')
@@ -35,6 +37,7 @@ export class UsersController {
     await this.usersService.join(body.email, body.nickname, body.password);
   }
 
+  @UseGuards(LocalAuthGuards)
   @ApiOperation({ summary: '로그인' })
   @Post('login')
   login(@User() user) {
