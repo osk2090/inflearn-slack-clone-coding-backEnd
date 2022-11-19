@@ -13,8 +13,19 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
     const status = exception.getStatus();
     const err = exception.getResponse() as
-      | string
-      | { error: string; statusCode: 400; message: string[] };
-    response.status(status).json({ msg: err });
+      | { message: any; statusCode: number }
+      | { error: string; statusCode: 400; message: string[] }; // class-validator
+
+    if (typeof err !== 'string' && err.statusCode === 400) {
+      return response.status(status).json({
+        success: false,
+        code: status,
+        data: err.message,
+      });
+    }
+
+    response
+      .status(status)
+      .json({ success: false, code: status, data: err.message });
   }
 }
