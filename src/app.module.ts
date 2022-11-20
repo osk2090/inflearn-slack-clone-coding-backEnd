@@ -17,6 +17,7 @@ import { Mentions } from './entities/Mentions';
 import { Users } from './entities/Users';
 import { WorkspaceMembers } from './entities/WorkspaceMembers';
 import { Workspaces } from './entities/Workspaces';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ import { Workspaces } from './entities/Workspaces';
       charset: 'utf8mb4_general_ci',
     }),
     TypeOrmModule.forFeature([Users]),
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService, ConfigService, UsersService],
