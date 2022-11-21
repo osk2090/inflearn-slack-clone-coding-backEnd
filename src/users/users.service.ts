@@ -14,10 +14,10 @@ import { ChannelMembers } from '../entities/ChannelMembers';
 export class UsersService {
   constructor(
     @InjectRepository(Users) private usersRepository: Repository<Users>,
-    // @InjectRepository(WorkspaceMembers)
-    // private workspaceMembersRepository: Repository<WorkspaceMembers>,
-    // @InjectRepository(ChannelMembers)
-    // private channelMembersRepository: Repository<ChannelMembers>,
+    @InjectRepository(WorkspaceMembers)
+    private workspaceMembersRepository: Repository<WorkspaceMembers>,
+    @InjectRepository(ChannelMembers)
+    private channelMembersRepository: Repository<ChannelMembers>,
     private dataSource: DataSource,
   ) {}
 
@@ -27,23 +27,14 @@ export class UsersService {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
+    const user = await queryRunner.manager
+      .getRepository(Users)
+      .findOne({ where: { email } });
+    if (user) {
+      throw new UnauthorizedException('이미 존재하는 사용자입니다.');
+    }
+    const hashedPassword = await bcrypt.hash(password, 12);
     try {
-      if (!email) {
-        throw new BadRequestException('이메일이 없습니다.');
-      }
-      if (!nickname) {
-        throw new BadRequestException('닉네임이 없습니다.');
-      }
-      if (!password) {
-        throw new BadRequestException('비밀번호가 없습니다.');
-      }
-      const user = await queryRunner.manager
-        .getRepository(Users)
-        .findOne({ where: { email } });
-      if (user) {
-        throw new UnauthorizedException('이미 존재하는 사용자입니다.');
-      }
-      const hashedPassword = await bcrypt.hash(password, 12);
       const returned = await queryRunner.manager.getRepository(Users).save({
         email,
         nickname,

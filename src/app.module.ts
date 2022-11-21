@@ -48,7 +48,7 @@ import { AuthModule } from './auth/auth.module';
       keepConnectionAlive: true,
       charset: 'utf8mb4_general_ci',
     }),
-    TypeOrmModule.forFeature([Users]),
+    TypeOrmModule.forFeature([Users, WorkspaceMembers, ChannelMembers]),
     AuthModule,
   ],
   controllers: [AppController],

@@ -7,7 +7,7 @@ import {
 import { map, Observable } from 'rxjs';
 
 @Injectable()
-export class UndifinedToNullInterceptor implements NestInterceptor {
+export class UndefinedToNullInterceptor implements NestInterceptor {
   intercept(
     context: ExecutionContext,
     next: CallHandler<any>,
