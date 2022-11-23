@@ -40,7 +40,7 @@ export class UsersService {
         nickname,
         password: hashedPassword,
       });
-      throw new Error('롤백!');
+      // throw new Error('롤백!');
       await queryRunner.manager.getRepository(WorkspaceMembers).save({
         Userid: returned.id,
         WorkspaceId: 1,
