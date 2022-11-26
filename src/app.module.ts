@@ -18,6 +18,7 @@ import { Users } from './entities/Users';
 import { WorkspaceMembers } from './entities/WorkspaceMembers';
 import { Workspaces } from './entities/Workspaces';
 import { AuthModule } from './auth/auth.module';
+import { EventsModule } from './events/events.module';
 
 @Module({
   imports: [
@@ -50,6 +51,7 @@ import { AuthModule } from './auth/auth.module';
     }),
     TypeOrmModule.forFeature([Users, WorkspaceMembers, ChannelMembers]),
     AuthModule,
+    EventsModule,
   ],
   controllers: [AppController],
   providers: [AppService, ConfigService, UsersService],
