@@ -99,7 +99,7 @@ export class ChannelsService {
       .getMany();
   }
 
-  async getChannelUnreadCount(url: string, name: string, after: string) {
+  async getChannelUnreadCount(url: string, name: string, after: number) {
     const channel = await this.channelsRepository
       .createQueryBuilder('channel')
       .innerJoin('channel.Workspace', 'workspace', 'workspace.url = :url', {
@@ -118,5 +118,40 @@ export class ChannelsService {
       where: { name },
       relations: ['Workspace'],
     });
+  }
+
+  async getWorkspaceChannelMembers(url: string, name: string) {
+    return this.usersRepository
+      .createQueryBuilder('user')
+      .innerJoin('user.Channels', 'channels', 'channels.name = :name', {
+        name,
+      })
+      .innerJoin('channels.Workspace', 'workspace', 'workspace.url = :url', {
+        url,
+      })
+      .getMany();
+  }
+
+  async postChat({ url, name, contents, myId }) {
+    const channel = await this.channelsRepository
+      .createQueryBuilder('channel')
+      .innerJoin('channel.Workspace', 'workspace', 'workspace.url = :url', {
+        url,
+      })
+      .where('channel.name = :name', { name })
+      .getOne();
+    if (!channel) {
+      throw new NotFoundException('채널이 존재하지 않습니다.');
+    }
+    const chats = new ChannelChats();
+    chats.content = contents;
+    chats.UserId = myId;
+    chats.ChannelId = channel.id;
+    const saveChat = await this.channelChatsRepository.save(chats);
+    const chatWithUser = await this.channelChatsRepository.findOne({
+      where: { id: saveChat.id },
+      relations: ['User', 'Channel'],
+    });
+    //socket.io로 워크스페이스+채널 사용자한테 전송
   }
 }

@@ -7,6 +7,7 @@ import { ChannelMembers } from '../entities/ChannelMembers';
 import { ChannelChats } from '../entities/ChannelChats';
 import { Users } from '../entities/Users';
 import { Workspaces } from '../entities/Workspaces';
+import { WorkspaceMembers } from '../entities/WorkspaceMembers';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { Workspaces } from '../entities/Workspaces';
       ChannelChats,
       Users,
       Workspaces,
+      WorkspaceMembers,
     ]),
   ],
   controllers: [ChannelsController],

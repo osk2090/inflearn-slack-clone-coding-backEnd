@@ -42,11 +42,11 @@ export class UsersService {
       });
       // throw new Error('롤백!');
       await queryRunner.manager.getRepository(WorkspaceMembers).save({
-        Userid: returned.id,
+        UserId: returned.id,
         WorkspaceId: 1,
       });
       await queryRunner.manager.getRepository(ChannelMembers).save({
-        Userid: returned.id,
+        UserId: returned.id,
         ChannelId: 1,
       });
       await queryRunner.commitTransaction();
