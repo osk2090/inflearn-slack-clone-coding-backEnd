@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Workspaces } from '../entities/Workspaces';
-import { Repository } from 'typeorm';
+import { MoreThan, Repository } from 'typeorm';
 import { Channels } from '../entities/Channels';
 import { WorkspaceMembers } from '../entities/WorkspaceMembers';
 import { ChannelMembers } from '../entities/ChannelMembers';
@@ -45,6 +45,72 @@ export class ChannelsService {
         { url },
       )
       .getMany();
+  }
+
+  async createWorkspaceChannelMembers(
+    url: string,
+    name: string,
+    email: string,
+  ) {
+    const channel = await this.channelsRepository
+      .createQueryBuilder('channel')
+      .innerJoin('channel.Workspace', 'workspace', 'workspace.url = :url', {
+        url,
+      })
+      .where('channel.name = :name', { name })
+      .getOne();
+    if (!channel) {
+      throw new NotFoundException('채널이 존재하지 않습니다.');
+    }
+    const user = await this.usersRepository
+      .createQueryBuilder('user')
+      .where('user.email = :email', { email })
+      .innerJoin('user.Workspaces', 'workspace', 'workspace.url = :url', {
+        url,
+      })
+      .getOne();
+    if (!user) {
+      throw new NotFoundException('사용자가 존재하지 않습니다.');
+    }
+    const channelMember = new ChannelMembers();
+    channelMember.ChannelId = channel.id;
+    channelMember.UserId = user.id;
+    await this.channelMembersRepository.save(channelMember);
+  }
+
+  async getWorkspaceChannelChats(
+    url: string,
+    name: string,
+    perPage: number,
+    page: number,
+  ) {
+    return this.channelChatsRepository
+      .createQueryBuilder('channelChats')
+      .innerJoin('channelChats.Channel', 'channel', 'channel.name = :name', {
+        name,
+      })
+      .innerJoin('channel.Workspace', 'workspace', 'workspace.url = :url', {
+        url,
+      })
+      .innerJoinAndSelect('channelChats.User', 'user')
+      .orderBy('channelChats.createdAt', 'DESC')
+      .take(perPage)
+      .skip(perPage * (page - 1))
+      .getMany();
+  }
+
+  async getChannelUnreadCount(url: string, name: string, after: string) {
+    const channel = await this.channelsRepository
+      .createQueryBuilder('channel')
+      .innerJoin('channel.Workspace', 'workspace', 'workspace.url = :url', {
+        url,
+      })
+      .where('channel.name = :name', { name })
+      .getOne();
+
+    return this.channelChatsRepository.count({
+      where: { ChannelId: channel.id, createdAt: MoreThan(new Date(after)) },
+    });
   }
 
   async getWorkspaceChannel(url: string, name: string) {
